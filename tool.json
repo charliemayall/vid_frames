@@ -1,0 +1,51 @@
+{
+  "type": "function",
+  "function": {
+    "name": "filter_subtitles",
+    "description": "Handle filtered subtitles by topic.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "subtitles": {
+          "type": "array",
+          "description": "A list of subtitle items, each item structured as {'begin': 'time', 'end': 'time', 'text': 'subtitle text'}.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "begin": {
+                "type": "string",
+                "description": "The time at which the subtitle begins"
+              },
+              "end": {
+                "type": "string",
+                "description": "The time at which the subtitle ends"
+              },
+              "text": {
+                "type": "string",
+                "description": "The text of the subtitle"
+              },
+              "rating": {
+                "type": "number",
+                "description": "The relevance of the subtitle to the topic (0-1)"
+              }
+            },
+            "required": [
+              "begin",
+              "end",
+              "text",
+              "rating"
+            ]
+          }
+        },
+        "topic": {
+          "type": "string",
+          "description": "The topic to filter subtitles by relevance."
+        }
+      },
+      "required": [
+        "subtitles",
+        "topic"
+      ]
+    }
+  }
+}

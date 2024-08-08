@@ -1,0 +1,9 @@
+**/*.mkv
+**/*.mkv
+**/*.jpg
+**/*.jpeg
+videos/**
+frames/**
+specific_frames/**
+
+api.txt
