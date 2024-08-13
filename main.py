@@ -111,12 +111,6 @@ def routine(url: str) -> List[dict]:
 def run_link(link: str, topic: str, threshold: float = 0.5):
     assert 0 <= threshold <= 1
     pairs = routine(link)
-    # pairs = [
-    #     {
-    #         "sub": "videos/Mi-28_Hit_by_a_Drone!_Another_45_Russians_Captured_in_Kursk_District.en-orig.ttml",
-    #         "vid": "videos/Mi-28_Hit_by_a_Drone!_Another_45_Russians_Captured_in_Kursk_District.webm",
-    #     }
-    # ]
     for pair in pairs:
         vid_path = Path(pair["vid"])
         sub_path = Path(pair["sub"])
