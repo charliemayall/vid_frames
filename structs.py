@@ -1,9 +1,11 @@
-from dataclasses import dataclass
 import typing
 import functools
+from pydantic import BaseModel
+import pydantic
+import pydantic.generics
 
 
-class Subtitle:
+class Subtitle(BaseModel):
     """
     ### Attributes
 
@@ -24,8 +26,7 @@ class Subtitle:
         return cls(**data)
 
 
-@dataclass
-class FilteredSubtitle:
+class FilteredSubtitle(BaseModel):
     """
     ### Attributes
     rating: float
@@ -41,8 +42,12 @@ class FilteredSubtitle:
     begin: str
     end: str
     text: str
-    rating: float = None
+    rating: float
 
     @classmethod
     def from_dict(cls, data: dict):
         return cls(**data)
+
+
+class ApiResultFiltSubtitles(BaseModel):
+    res: typing.List[FilteredSubtitle]

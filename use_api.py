@@ -3,7 +3,7 @@ import json
 from typing import List
 import openai
 from pathlib import Path
-from structs import Subtitle
+from structs import ApiResultFiltSubtitles, Subtitle
 
 
 KEY = (Path(__file__).parent / "api.txt").read_text().strip()
@@ -70,11 +70,11 @@ def force_tool(tool: dict):
 
 
 def filter_subtitles(subtitles: List[Subtitle], topic: str):
-    api = openai.Client(api_key=KEY)
-    response = api.chat.completions.create(
-        model="gpt-4-turbo",
-        tools=TOOLS,
-        tool_choice=force_tool(TOOLS[0]),
+    api = openai.OpenAI(api_key=KEY)
+    response = api.beta.chat.completions.parse(
+        model="gpt-4o-2024-08-06",
+        # tools=TOOLS,
+        # tool_choice=force_tool(TOOLS[0]),
         messages=[
             {
                 "role": "system",
@@ -89,15 +89,22 @@ def filter_subtitles(subtitles: List[Subtitle], topic: str):
                 "content": json.dumps({"subtitles": subtitles, "topic": topic}),
             },
         ],
+        response_format=ApiResultFiltSubtitles,
     )
-    tool_calls = response.choices[0].message.tool_calls
-    if not tool_calls:
-        return None
-    (ROOT / "tool_calls.json").write_text(tool_calls[0].function.arguments)
-    clean_res_str = clean_json_string(tool_calls[0].function.arguments)
-    full_res = json.loads(clean_res_str)
-    subtitles_filt = full_res.get("subtitles", [])
-    return {"result": full_res, "removed": len(subtitles) - len(subtitles_filt)}
+    res = (
+        response.choices[0].message.parsed
+        if not response.choices[0].message.refusal
+        else None
+    )
+    return res
+    # # tool_calls = response.choices[0].message.tool_calls
+    # # if not tool_calls:
+    # #     return None
+    # (ROOT / "tool_calls.json").write_text(res)
+    # # clean_res_str = clean_json_string(tool_calls[0].function.arguments)
+    # # full_res = json.loads(clean_res_str)
+    # # subtitles_filt = full_res.get("subtitles", [])
+    # # return {"result": full_res, "removed": len(subtitles) - len(subtitles_filt)}
 
 
 def clean_json_string(dirty_json: str) -> str:
