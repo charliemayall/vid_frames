@@ -110,13 +110,13 @@ def routine(url: str) -> List[dict]:
 
 def run_link(link: str, topic: str, threshold: float = 0.5):
     assert 0 <= threshold <= 1
-    # pairs = routine(link)
-    pairs = [
-        {
-            "sub": "videos/Mi-28_Hit_by_a_Drone!_Another_45_Russians_Captured_in_Kursk_District.en-orig.ttml",
-            "vid": "videos/Mi-28_Hit_by_a_Drone!_Another_45_Russians_Captured_in_Kursk_District.webm",
-        }
-    ]
+    pairs = routine(link)
+    # pairs = [
+    #     {
+    #         "sub": "videos/Mi-28_Hit_by_a_Drone!_Another_45_Russians_Captured_in_Kursk_District.en-orig.ttml",
+    #         "vid": "videos/Mi-28_Hit_by_a_Drone!_Another_45_Russians_Captured_in_Kursk_District.webm",
+    #     }
+    # ]
     for pair in pairs:
         vid_path = Path(pair["vid"])
         sub_path = Path(pair["sub"])
@@ -135,8 +135,7 @@ def run_link(link: str, topic: str, threshold: float = 0.5):
             slice = captions[x : x + c_size]
             res = filter_subtitles(slice, topic)
             if res is not None:
-                subs_filtered = res["result"]["subtitles"]
-                filts.extend(subs_filtered)
+                filts.extend(res)
             x += c_size
 
         folder = SPEC_FRAMES / vid_path.stem
@@ -144,7 +143,7 @@ def run_link(link: str, topic: str, threshold: float = 0.5):
         (folder / "filtered.json").write_text(json.dumps(filts))
 
         extract_frames_at_timestamps(
-            [FilteredSubtitle.from_dict(x) for x in filts if x["rating"] > threshold],
+            [x for x in filts if x.rating >= threshold],
             vid_path,
             vid_path.stem,
         )

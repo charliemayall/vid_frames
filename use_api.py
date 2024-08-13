@@ -1,9 +1,10 @@
+import typing
 import regex as re
 import json
 from typing import List
 import openai
 from pathlib import Path
-from structs import ApiResultFiltSubtitles, Subtitle
+from structs import ApiResultFiltSubtitles, FilteredSubtitle, Subtitle
 
 
 KEY = (Path(__file__).parent / "api.txt").read_text().strip()
@@ -89,7 +90,7 @@ def filter_subtitles(subtitles: List[Subtitle], topic: str):
                 "content": json.dumps({"subtitles": subtitles, "topic": topic}),
             },
         ],
-        response_format=ApiResultFiltSubtitles,
+        response_format=typing.List[FilteredSubtitle],
     )
     res = (
         response.choices[0].message.parsed
@@ -97,14 +98,6 @@ def filter_subtitles(subtitles: List[Subtitle], topic: str):
         else None
     )
     return res
-    # # tool_calls = response.choices[0].message.tool_calls
-    # # if not tool_calls:
-    # #     return None
-    # (ROOT / "tool_calls.json").write_text(res)
-    # # clean_res_str = clean_json_string(tool_calls[0].function.arguments)
-    # # full_res = json.loads(clean_res_str)
-    # # subtitles_filt = full_res.get("subtitles", [])
-    # # return {"result": full_res, "removed": len(subtitles) - len(subtitles_filt)}
 
 
 def clean_json_string(dirty_json: str) -> str:

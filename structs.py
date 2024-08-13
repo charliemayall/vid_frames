@@ -1,8 +1,6 @@
 import typing
 import functools
-from pydantic import BaseModel
-import pydantic
-import pydantic.generics
+from pydantic import BaseModel, Field
 
 
 class Subtitle(BaseModel):
@@ -42,12 +40,8 @@ class FilteredSubtitle(BaseModel):
     begin: str
     end: str
     text: str
-    rating: float
+    rating: float = Field(default=0.0, ge=0.0, le=1.0)
 
     @classmethod
     def from_dict(cls, data: dict):
         return cls(**data)
-
-
-class ApiResultFiltSubtitles(BaseModel):
-    res: typing.List[FilteredSubtitle]
